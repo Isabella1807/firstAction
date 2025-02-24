@@ -8,6 +8,10 @@ on:
 
 jobs:
   test:
+    strategy:
+      matrix:
+        node-version: [ 14.x, 16.x, 18.x ]
+
     runs-on: ubuntu-latest
 
     steps:
@@ -35,3 +39,15 @@ jobs:
         with:
           name: coverage
           path: coverage/
+
+      - name: Comment PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: 'Tests passed succesfully!'
+            })
